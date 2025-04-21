@@ -1,127 +1,4 @@
 
-// let allQuestionsObj = [
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Entertainment: Vampire Diaries",
-//         "question": "Who turned Caroline Forbes into a vampire?",
-//         "correct_answer": "Katherine Pierce",
-//         "incorrect_answers": [
-//             "Stefan Salvatore",
-//             "Elena Gilbert",
-//             "Damon Salvatore"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Geography: Kenya",
-//         "question": "What is the capital city of Kenya?",
-//         "correct_answer": "Nairobi",
-//         "incorrect_answers": [
-//             "Mombasa",
-//             "Kisumu",
-//             "Nakuru"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Animals: Cats",
-//         "question": "What breed of cat is known for being hairless?",
-//         "correct_answer": "Sphynx",
-//         "incorrect_answers": [
-//             "Persian",
-//             "Maine Coon",
-//             "Bengal"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Science: Human Body",
-//         "question": "Which organ is responsible for pumping blood throughout the body?",
-//         "correct_answer": "Heart",
-//         "incorrect_answers": [
-//             "Liver",
-//             "Lungs",
-//             "Kidneys"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Entertainment: Vampire Diaries",
-//         "question": "What is the name of Elena's doppelgänger ancestor?",
-//         "correct_answer": "Katherine Pierce",
-//         "incorrect_answers": [
-//             "Isobel Flemming",
-//             "Rebekah Mikaelson",
-//             "Lexi Branson"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Geography: Kenya",
-//         "question": "Which famous wildlife migration occurs in Kenya and Tanzania?",
-//         "correct_answer": "The Great Migration",
-//         "incorrect_answers": [
-//             "The Sahara Trek",
-//             "The Savannah Drift",
-//             "The Big Five Journey"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Animals: Cats",
-//         "question": "What is a group of cats called?",
-//         "correct_answer": "Clowder",
-//         "incorrect_answers": [
-//             "Flock",
-//             "Pack",
-//             "Herd"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Science: Human Body",
-//         "question": "How many bones are in the adult human body?",
-//         "correct_answer": "206",
-//         "incorrect_answers": [
-//             "201",
-//             "208",
-//             "210"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Entertainment: Vampire Diaries",
-//         "question": "Who is the original hybrid in The Vampire Diaries?",
-//         "correct_answer": "Klaus Mikaelson",
-//         "incorrect_answers": [
-//             "Elijah Mikaelson",
-//             "Tyler Lockwood",
-//             "Stefan Salvatore"
-//         ]
-//     },
-//     {
-//         "type": "multiple",
-//         "difficulty": "easy",
-//         "category": "Science: Human Body",
-//         "question": "What part of the human body contains the smallest bones?",
-//         "correct_answer": "Ear",
-//         "incorrect_answers": [
-//             "Hand",
-//             "Foot",
-//             "Nose"
-//         ]
-//     }
-// ]
-// let questionsObj = allQuestionsObj.slice(0, 3)
 
 const questionsOrderedList = document.querySelector('.quiz ol')
 const quizDiv = document.querySelector('.quiz')
@@ -139,10 +16,11 @@ const correctCount = document.getElementById('correct-count')
 const percentage = document.getElementById('score-percentage');
 const feedback = document.getElementById('feedback')
 const reviewBtn = document.querySelector('.review-btn')
-
+const startPageRetryExactBtn = document.querySelector('.start-retry-btn')
+const overlayRetryExactBtn = document.querySelector('.retry-exact-in-overlay')
 
 let totalAnswered = 0
-
+let questionsObj;
 let totalQuestions;
 
 let score = 0;
@@ -232,12 +110,12 @@ function createQuestionElement(questionObj) {
 
         let selected = formElement.querySelector('input[name="choice"]:checked')
         if (selected) {
-            console.log("Selected answer:", selected.value,);
+            //console.log("Selected answer:", selected.value,);
 
 
 
             renderAnswerResultv2(selected, questionObj, formElement)
-            console.log(selected.checked)
+           // console.log(selected.checked)
             questionWrapper.style.pointerEvents = 'none';
 
 
@@ -301,6 +179,7 @@ function resetQuiz() {
     quizDiv.classList.add('temp-hidden')
     mainContainer.classList.add('temp-hidden')
     startPage.classList.remove('hidden')
+    startPageRetryExactBtn.classList.add('hidden')
     score = 0;
     totalAnswered = 0
     questionsGotWrong = []
@@ -322,7 +201,7 @@ function autoRenderResults() {
 //autoRenderResults()
 function renderResults() {
     correctCount.textContent = `${score} out of ${totalQuestions}`
-    console.log(correctCount.textContent)
+    // console.log(correctCount.textContent)
 
     let scoreAsPercentage = (score / totalQuestions * 100).toFixed(0)
     percentage.textContent = scoreAsPercentage
@@ -364,7 +243,7 @@ function renderAnswerResultv2(selected, questionObject, formElement) {
         // formElement.style.pointerEvents = "none";
         // selected.parentElement.style.backgroundColor = 'yellow'
 
-        console.log("parent for selected:", selected.parentElement)
+        // console.log("parent for selected:", selected.parentElement)
         selected.parentElement.style.backgroundColor = 'lightgreen'
         selected.parentElement.style.borderRadius = '7.5%'
         formElement.parentElement.style.border = '3px solid green'
@@ -387,11 +266,11 @@ function renderAnswerResultv2(selected, questionObject, formElement) {
         // selected.parentElement.style.backgroundColor = 'red'
         // formElement.style.pointerEvents = "none";
 
-        console.log("parent for selected:", selected.parentElement)
+        // console.log("parent for selected:", selected.parentElement)
         selected.parentElement.style.backgroundColor = 'red'
         selected.parentElement.style.borderRadius = '7.5%'
         formElement.parentElement.style.border = '3px solid red'
-        console.log('parent for form:', formElement.parentElement)
+        // console.log('parent for form:', formElement.parentElement)
 
         let correctAnswer = document.createElement('div')
         correctAnswer.classList.add('correction')
@@ -399,9 +278,9 @@ function renderAnswerResultv2(selected, questionObject, formElement) {
         formElement.parentElement.appendChild(correctAnswer)
         selected.parentElement.querySelector('.icons .bx-x').style.display = 'block'
         //formElement.parentElement.style.pointerEvents = "none";
-        console.log(correctAnswer)
+        // console.log(correctAnswer)
         totalAnswered += 1
-        console.log(totalAnswered)
+        // console.log(totalAnswered)
         scoreBoardScoreElement.textContent = '😿'
         let questionGotWrong = { ...questionObject }
         questionGotWrong['incorrect_answer'] = selected.value
@@ -418,7 +297,85 @@ function createSeeResults() {
 
 }
 
-document.addEventListener('DOMContentLoaded', () => renderTrivia)
+restartBtn.addEventListener('click', () => {
+    resetQuiz()
+})
+
+overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+        overlay.classList.add('hidden');
+    }
+});
+
+tryAgainBtn.addEventListener('click', () => {
+    overlay.classList.add('hidden')
+    resetQuiz()
+}
+)
+//work-in-progress
+function retryExactQuestions(questionsObj) {
+    questionsOrderedList.innerHTML = ''
+    quizDiv.classList.add('temp-hidden')
+    mainContainer.classList.add('temp-hidden')
+    startPage.classList.remove('hidden')
+    startBtn.classList.add('hidden')
+    overlay.classList.add('hidden')
+    startPageRetryExactBtn.classList.remove('hidden')
+    score = 0;
+    totalAnswered = 0
+    questionsGotWrong = []
+    
+    scoreBoardScoreElement.textContent = '😺'
+    scoreBoard.classList.add('temp-hidden')
+    renderExactAgain(questionsObj)
+
+
+}
+
+function renderExactAgain(questionsObj) {
+
+    //console.log(questionsObj)
+    totalQuestions = questionsObj.length
+    //insertQuestionNumber(questionsObj)
+    //console.log(questionsObj)              
+    //insertChoicesArray(questionsObj)
+    //console.log(questionsObj)
+    questionsObj.forEach((questionObj) => createQuestionElement(questionObj))
+    questionsOrderedList.appendChild(createSeeResults())
+    document.querySelector('.quiz ol').style.display = 'flex'
+    resultsBtn = document.querySelector('ol > div > p')
+
+    resultsBtn.addEventListener('click', () => {
+
+        if (totalQuestions === totalAnswered) {
+            renderResults()
+            // console.log(score)
+        } else {
+            alert(`You haven't answered ${totalQuestions - totalAnswered} questions.`)
+        }
+
+    })
+
+
+    reviewBtn.addEventListener('click', () => {
+        overlay.classList.add('hidden')
+        if (questionsGotWrong.length > 0) {
+            questionsOrderedList.innerHTML = ''
+            // console.log(questionsGotWrong)
+            questionsGotWrong.forEach((questionObj) => createQuestionAnswerElement(questionObj))
+        }
+        scoreBoardScoreElement.textContent = '😺'
+
+    })
+
+
+}
+
+overlayRetryExactBtn.addEventListener('click', () => {
+    retryExactQuestions(questionsObj)
+})
+
+document.addEventListener('DOMContentLoaded', () => renderTrivia())
 
 function renderTrivia() {
 
@@ -430,76 +387,54 @@ function renderTrivia() {
         mainContainer.classList.remove('temp-hidden')
         quizDiv.classList.remove('temp-hidden')
         scoreBoard.classList.remove('temp-hidden')
-
+        // console.log('engines running')
         fetch(`https://opentdb.com/api.php?amount=10`)
             .then(res => res.json())
-            .then(questionsObj => {
-                console.log(questionsObj)
+            .then(data => {
+                questionsObj = data.results
+                // console.log(questionsObj)
                 totalQuestions = questionsObj.length
                 insertQuestionNumber(questionsObj)
                 //console.log(questionsObj)              
                 insertChoicesArray(questionsObj)
-                console.log(questionsObj)
-                renderTrivia(questionsObj)
+                // console.log(questionsObj)
+                questionsObj.forEach((questionObj) => createQuestionElement(questionObj))
+                questionsOrderedList.appendChild(createSeeResults())
+                document.querySelector('.quiz ol').style.display = 'flex'
+                resultsBtn = document.querySelector('ol > div > p')
+
+                resultsBtn.addEventListener('click', () => {
+
+                    if (totalQuestions === totalAnswered) {
+                        renderResults()
+                        // console.log(score)
+                    } else {
+                        alert(`You haven't answered ${totalQuestions - totalAnswered} questions.`)
+                    }
+
+                })
+
+
+                reviewBtn.addEventListener('click', () => {
+                    overlay.classList.add('hidden')
+                    if (questionsGotWrong.length > 0) {
+                        questionsOrderedList.innerHTML = ''
+                        // console.log(questionsGotWrong)
+                        questionsGotWrong.forEach((questionObj) => createQuestionAnswerElement(questionObj))
+                    }
+                    scoreBoardScoreElement.textContent = '😺'
+
+                })
+
 
             })
-        questionsObj.forEach((questionObj) => createQuestionElement(questionObj))
-        questionsOrderedList.appendChild(createSeeResults())
 
 
-        document.querySelector('.quiz ol').style.display = 'flex'
-        resultsBtn = document.querySelector('ol > div > p')
-        resultsBtn.addEventListener('click', () => {
 
-            if (totalQuestions === totalAnswered) {
-                renderResults()
-                console.log(score)
-            } else {
-                alert(`You haven't answered ${totalQuestions - totalAnswered} questions.`)
-            }
 
-        })
+        //Ask person to confirm answer.
 
     })
-
-    restartBtn.addEventListener('click', () => {
-        resetQuiz()
-    })
-
-
-
-
-
-    overlay.addEventListener('click', (e) => {
-        if (e.target === overlay) {
-            overlay.classList.add('hidden');
-        }
-    });
-
-    reviewBtn.addEventListener('click', () => {
-        overlay.classList.add('hidden')
-        if (questionsGotWrong.length > 0) {
-            questionsOrderedList.innerHTML = ''
-            console.log(questionsGotWrong)
-            questionsGotWrong.forEach((questionObj) => createQuestionAnswerElement(questionObj))
-        }
-        scoreBoardScoreElement.textContent = '😺'
-
-    })
-
-
-    tryAgainBtn.addEventListener('click', () => {
-        overlay.classList.add('hidden')
-        resetQuiz()
-    }
-    )
-    //Ask person to confirm answer.
-
-
-
-
-
-
 
 
 
