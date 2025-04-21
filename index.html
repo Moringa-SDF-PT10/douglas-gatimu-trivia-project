@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Trivia</title>
+    <link rel="stylesheet" href="https://unpkg.com/boxicons@latest/css/boxicons.min.css">
+    <link rel="stylesheet" href="./style.css">
+
+</head>
+
+<body>
+    <header>
+        <div class="top">
+            <h1 class="logo">trivia HQ</h1>
+            <div class="stats">
+                
+                    <i class='bx bxs-bar-chart-alt-2'></i> 
+                    <i class='bx bx-cog' ></i>
+                
+            </div>
+        </div>
+        <div class="today">
+            <p class="quiz-mode">
+                Mode: Random Questions
+            </p>
+
+        </div>
+
+    </header>
+
+    <div class="start-page">
+        <button class="start-btn" type="button">
+            Start Quiz 🚀
+        </button>
+
+    </div>
+
+    <div class="container">
+        <main class="main-content">
+
+
+            <div class="quiz">
+                <ol>
+
+                </ol>
+            </div>
+
+
+        </main>
+        <aside class="sidebar temp-hidden">
+            <div class="scores">
+            <p>Keep Him Happy</p>
+            <p class="score-board">😺</p>
+            <p class="restart">Get Fresh Quiz</p>
+        </div>
+        </aside>
+    </div>
+    <div class="overlay temp-hidden hidden">
+        <div class="your-results">
+          <p>Total Correct: <span id="correct-count"></span></p>
+          <p>Percentage: <span id="score-percentage"></span>%</p>
+          <p id="feedback"></p>
+          <p class="review-btn">See the Correct Answers</p>
+          <p>OR</p>
+          <p class="try-again-btn"> Try Another One</p>
+        </div>
+      </div>
+</body>
+<script src="./index.js"></script>
+
+</html>
