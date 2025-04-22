@@ -204,7 +204,7 @@ header {
     top: 1rem;
     display: flex;
     flex-direction: column;
-    height: 50vh;
+    height: 60vh;
     width: 60%;
     justify-content: space-between;
     align-items: center;
@@ -256,13 +256,17 @@ header {
     background-color: rgb(201, 224, 216);
     
 }
-.sidebar div p.restart {
+.sidebar div p.restart-fresh, .sidebar div p.restart-exact {
     padding: 5px 30px 5px 30px;
     background-color: red;
     color: white;
     text-align: center;
+    border-radius: 5%;
 }
-.sidebar div p.restart:hover {
+.sidebar div p.restart-exact {
+    background-color: rgb(15, 186, 15);
+}
+.sidebar div p.restart-fresh:hover, .sidebar div p.restart-exact:hover {
     cursor: pointer;
     background-color: blueviolet;
 }
@@ -274,7 +278,7 @@ header {
 }
 
 
-.start-btn {
+.start-btn, .start-retry-btn {
     
     font-size: 1.3rem;
     font-weight: 600;
@@ -285,7 +289,7 @@ header {
     border-radius: 5%;
 }
 
-.start-btn:hover {
+ .start-retry-btn:hover {
     background-color: cornflowerblue;
     box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
     border: 3px solid maroon;
@@ -294,10 +298,19 @@ header {
 
 
 }
+
+.start-btn:hover {
+    background-color: green;
+    box-shadow: rgba(100, 100, 111, 0.2) 0px 7px 20px 0px;
+    border: 3px solid maroon;
+    cursor: pointer;
+}
 .start-page {
     
     display: flex;
-    justify-content: center;
+    flex-direction: column-reverse;
+    gap: 10px;
+    justify-content: space-around;
     align-items: center;
     height: 50vh;
 }

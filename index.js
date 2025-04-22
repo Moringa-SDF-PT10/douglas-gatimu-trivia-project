@@ -6,7 +6,8 @@ const quizDiv = document.querySelector('.quiz')
 const startBtn = document.querySelector('.start-btn')
 const startPage = document.querySelector('.start-page')
 const scoreBoardScoreElement = document.querySelector('aside > div > p.score-board')
-const restartBtn = document.querySelector('aside > div > p.restart')
+const forfeitBtn = document.querySelector('aside > div > p.restart-fresh')
+const restartExactBtn = document.querySelector('aside > div > p.restart-exact')
 const scoreBoard = document.querySelector('aside')
 const tryAgainBtn = document.querySelector('.try-again-btn')
 const mainContainer = document.querySelector('.container')
@@ -22,6 +23,8 @@ const overlayRetryExactBtn = document.querySelector('.retry-exact-in-overlay')
 let totalAnswered = 0
 let questionsObj;
 let totalQuestions;
+let storedQuestions;
+let freshQuizFlag = true;
 
 let score = 0;
 function insertQuestionNumber(questionsObj) {
@@ -66,8 +69,6 @@ function populateFormElement(choices) {
 
     return formElement
 }
-
-
 
 function createQuestionElement(questionObj) {
     let questionWrapper = document.createElement('li')
@@ -174,21 +175,47 @@ function createQuestionAnswerElement(questionObj) {
 
 }
 
-function resetQuiz() {
+function resetQuiz(freshQuizFlag) {
+    console.log(freshQuizFlag)
+    if (freshQuizFlag) {
+        questionsOrderedList.innerHTML = ''
+        quizDiv.classList.add('temp-hidden')
+        mainContainer.classList.add('temp-hidden')
+        startPage.classList.remove('hidden')
+        startBtn.textContent = 'Start Quiz🚀'
+        startPageRetryExactBtn.classList.add('hidden')
+        score = 0;
+        totalAnswered = 0
+        questionsGotWrong = []
+        
+        //scoreElement.textContent = score
+        scoreBoardScoreElement.textContent = '😺'
+        scoreBoard.classList.add('temp-hidden')
+        
+    } else {
+
+
+    console.log('unhiding now')
+    startPageRetryExactBtn.classList.remove('hidden')
     questionsOrderedList.innerHTML = ''
     quizDiv.classList.add('temp-hidden')
     mainContainer.classList.add('temp-hidden')
     startPage.classList.remove('hidden')
-    startPageRetryExactBtn.classList.add('hidden')
+    startBtn.textContent = 'Start Fresh Quiz🚀'
     score = 0;
     totalAnswered = 0
     questionsGotWrong = []
     //scoreElement.textContent = score
     scoreBoardScoreElement.textContent = '😺'
     scoreBoard.classList.add('temp-hidden')
-
+    }
 
 }
+
+
+
+
+
 
 function autoRenderResults() {
     if (totalQuestions === totalAnswered && totalAnswered > 0) {
@@ -297,9 +324,27 @@ function createSeeResults() {
 
 }
 
-restartBtn.addEventListener('click', () => {
-    resetQuiz()
+function renderStoredQuestions() {
+    freshQuizFlag = false
+    resetQuiz(freshQuizFlag)
+    freshQuizFlag=true
+    startPage.classList.add('hidden')
+    
+    mainContainer.classList.remove('temp-hidden')
+    quizDiv.classList.remove('temp-hidden')
+    scoreBoard.classList.remove('temp-hidden')
+    storedQuestions.sort(() => 0.5 - Math.random())
+    startQuiz(storedQuestions.slice(0 , 5))
+}
+
+forfeitBtn.addEventListener('click', () => {
+    freshQuizFlag = true
+    resetQuiz(freshQuizFlag)
 })
+
+
+
+restartExactBtn.addEventListener('click', () =>  renderStoredQuestions())
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
@@ -309,41 +354,41 @@ overlay.addEventListener('click', (e) => {
 
 tryAgainBtn.addEventListener('click', () => {
     overlay.classList.add('hidden')
-    resetQuiz()
+    resetQuiz(freshQuizFlag)
 }
 )
-//work-in-progress
-function retryExactQuestions(questionsObj) {
-    questionsOrderedList.innerHTML = ''
-    quizDiv.classList.add('temp-hidden')
-    mainContainer.classList.add('temp-hidden')
-    startPage.classList.remove('hidden')
-    startBtn.classList.add('hidden')
+
+overlayRetryExactBtn.addEventListener('click', ()=> {
     overlay.classList.add('hidden')
-    startPageRetryExactBtn.classList.remove('hidden')
-    score = 0;
-    totalAnswered = 0
-    questionsGotWrong = []
-    
-    scoreBoardScoreElement.textContent = '😺'
-    scoreBoard.classList.add('temp-hidden')
-    renderExactAgain(questionsObj)
+    renderStoredQuestions()
+})
+
+startPageRetryExactBtn.addEventListener('click', () => {
+    freshQuizFlag=true
+    startPage.classList.add('hidden')
+    // startBtn.classList.add('temp-hidden')
+    mainContainer.classList.remove('temp-hidden')
+    quizDiv.classList.remove('temp-hidden')
+    scoreBoard.classList.remove('temp-hidden')
+    storedQuestions.sort(() => 0.5 - Math.random())
+    startQuiz(storedQuestions.slice(0 , 2))
+
+})
 
 
-}
 
-function renderExactAgain(questionsObj) {
 
-    //console.log(questionsObj)
+function startQuiz(questionsObj) {
+    // console.log(questionsObj)
     totalQuestions = questionsObj.length
-    //insertQuestionNumber(questionsObj)
+    insertQuestionNumber(questionsObj)
     //console.log(questionsObj)              
-    //insertChoicesArray(questionsObj)
-    //console.log(questionsObj)
+    insertChoicesArray(questionsObj)
+    // console.log(questionsObj)
     questionsObj.forEach((questionObj) => createQuestionElement(questionObj))
     questionsOrderedList.appendChild(createSeeResults())
     document.querySelector('.quiz ol').style.display = 'flex'
-    resultsBtn = document.querySelector('ol > div > p')
+    resultsBtn = document.querySelector('.results-summary-btn')
 
     resultsBtn.addEventListener('click', () => {
 
@@ -367,21 +412,15 @@ function renderExactAgain(questionsObj) {
         scoreBoardScoreElement.textContent = '😺'
 
     })
-
-
 }
 
-overlayRetryExactBtn.addEventListener('click', () => {
-    retryExactQuestions(questionsObj)
-})
 
-document.addEventListener('DOMContentLoaded', () => renderTrivia())
 
 function renderTrivia() {
 
 
     startBtn.addEventListener('click', () => {
-
+        freshQuizFlag=true
         startPage.classList.add('hidden')
         // startBtn.classList.add('temp-hidden')
         mainContainer.classList.remove('temp-hidden')
@@ -392,50 +431,12 @@ function renderTrivia() {
             .then(res => res.json())
             .then(data => {
                 questionsObj = data.results
-                // console.log(questionsObj)
-                totalQuestions = questionsObj.length
-                insertQuestionNumber(questionsObj)
-                //console.log(questionsObj)              
-                insertChoicesArray(questionsObj)
-                // console.log(questionsObj)
-                questionsObj.forEach((questionObj) => createQuestionElement(questionObj))
-                questionsOrderedList.appendChild(createSeeResults())
-                document.querySelector('.quiz ol').style.display = 'flex'
-                resultsBtn = document.querySelector('ol > div > p')
-
-                resultsBtn.addEventListener('click', () => {
-
-                    if (totalQuestions === totalAnswered) {
-                        renderResults()
-                        // console.log(score)
-                    } else {
-                        alert(`You haven't answered ${totalQuestions - totalAnswered} questions.`)
-                    }
-
-                })
-
-
-                reviewBtn.addEventListener('click', () => {
-                    overlay.classList.add('hidden')
-                    if (questionsGotWrong.length > 0) {
-                        questionsOrderedList.innerHTML = ''
-                        // console.log(questionsGotWrong)
-                        questionsGotWrong.forEach((questionObj) => createQuestionAnswerElement(questionObj))
-                    }
-                    scoreBoardScoreElement.textContent = '😺'
-
-                })
-
-
+                storedQuestions = [...questionsObj.slice(0, 5)]
+                startQuiz(questionsObj.slice(0,5))
             })
-
-
-
-
-        //Ask person to confirm answer.
 
     })
 
-
-
 }
+
+document.addEventListener('DOMContentLoaded', () => renderTrivia())
