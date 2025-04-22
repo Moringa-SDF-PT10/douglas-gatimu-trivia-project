@@ -30,7 +30,7 @@ This repository contains a browser-based interactive quiz application that enabl
 To get started, clone this repository to your local machine:
 
 ```bash
-git clone https://github.com/douglasgatimu/douglas-gatimu-trivia-project
+git clone https://github.com/Moringa-SDF-PT10/douglas-gatimu-trivia-project.git
 cd douglas-gatimu-trivia-project
 ```
 
