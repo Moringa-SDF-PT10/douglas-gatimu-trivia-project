@@ -371,7 +371,7 @@ startPageRetryExactBtn.addEventListener('click', () => {
     quizDiv.classList.remove('temp-hidden')
     scoreBoard.classList.remove('temp-hidden')
     storedQuestions.sort(() => 0.5 - Math.random())
-    startQuiz(storedQuestions.slice(0 , 2))
+    startQuiz(storedQuestions)
 
 })
 
@@ -431,8 +431,8 @@ function renderTrivia() {
             .then(res => res.json())
             .then(data => {
                 questionsObj = data.results
-                storedQuestions = [...questionsObj.slice(0, 5)]
-                startQuiz(questionsObj.slice(0,5))
+                storedQuestions = [...questionsObj]
+                startQuiz(questionsObj)
             })
 
     })
