@@ -15,10 +15,10 @@
         <div class="top">
             <h1 class="logo">trivia HQ</h1>
             <div class="stats">
-                
-                    <i class='bx bxs-bar-chart-alt-2'></i> 
-                    <i class='bx bx-cog' ></i>
-                
+
+                <i class='bx bxs-bar-chart-alt-2'></i>
+                <i class='bx bx-cog'></i>
+
             </div>
         </div>
         <div class="today">
@@ -46,31 +46,40 @@
                 <ol>
 
                 </ol>
+                <div class="question-control hidden">
+                    <button id='previous-question' >Previous</button>
+                    <button id='next-question' >Next</button>
+                    <button id='finish-btn' class= 'hidden' >Finish</button>
+                </div>
+                <div class="results-summary-btn hidden">
+                    <p>See Results Summary</p>
+                </div>
+
             </div>
 
 
         </main>
         <aside class="sidebar temp-hidden">
             <div class="scores">
-            <p>Cheerleader</p>
-            <p class="score-board">😺</p>
-            <p class="restart-fresh">Forfeit Quiz</p>
-            <p class="restart-exact">Restart This Quiz</p>
-        </div>
+                <p>Cheerleader</p>
+                <p class="score-board">😺</p>
+                <p class="restart-fresh">Forfeit Quiz</p>
+                <p class="restart-exact">Restart This Quiz</p>
+            </div>
         </aside>
     </div>
     <div class="overlay temp-hidden hidden">
         <div class="your-results">
-          <p>Total Correct: <span id="correct-count"></span></p>
-          <p>Percentage: <span id="score-percentage"></span>%</p>
-          <p id="feedback"></p>
-          <p class="review-btn">See the Correct Answers</p>
-          <p>OR</p>
-          <p class="retry-exact-in-overlay">Retry This Exact Quiz</p>
-          <p>OR</p>
-          <p class="try-again-btn"> Try Another One</p>
+            <p>Total Correct: <span id="correct-count"></span></p>
+            <p>Percentage: <span id="score-percentage"></span>%</p>
+            <p id="feedback"></p>
+            <p class="review-btn">See the Correct Answers</p>
+            <p>OR</p>
+            <p class="retry-exact-in-overlay">Retry This Exact Quiz</p>
+            <p>OR</p>
+            <p class="try-again-btn"> Try Another One</p>
         </div>
-      </div>
+    </div>
 </body>
 <script src="./index.js"></script>
 

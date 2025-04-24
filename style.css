@@ -102,6 +102,13 @@ ol {
     gap: 10px;
 }
 
+.quiz {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+
+}
+
 .submit-btn{
     background-color: greenyellow;
 
@@ -226,7 +233,7 @@ header {
 
 .results-summary-btn {
     display: flex;
-    justify-content: center;
+    justify-content: flex-end;
     align-items: center;
     
 }
@@ -239,6 +246,25 @@ header {
     
 
 }
+
+.question-control .inactive-btn {
+    pointer-events: none;
+    background-color: grey;
+    border: 3px solid gray;
+}
+
+.question-control {
+    display: flex;
+    justify-content: space-around;
+}
+.question-control button {
+    background-color: rgb(13, 174, 56);
+    width: fit-content;
+    cursor: pointer;
+    font-size: 1.2rem;
+
+}
+
 
 .results-summary-btn p:hover{
     background-color: rgb(192, 167, 149);
