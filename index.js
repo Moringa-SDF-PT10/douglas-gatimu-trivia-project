@@ -1,8 +1,13 @@
 
 
+const fetchURL = {
+    local: `http://localhost:3000/questionsObj`,
+    real: `https://opentdb.com/api.php?amount=10`
+
+} 
 const questionsOrderedList = document.querySelector('.quiz ol')
 const quizDiv = document.querySelector('.quiz')
-//const scoreElement = document.querySelector('.score span')
+
 const startBtn = document.querySelector('.start-btn')
 const startPage = document.querySelector('.start-page')
 const scoreBoardScoreElement = document.querySelector('aside > div > p.score-board')
@@ -25,14 +30,17 @@ let questionsObj;
 let totalQuestions;
 let storedQuestions;
 let freshQuizFlag = true;
-
 let score = 0;
+let questionsGotWrong = [];
+
+mainDOM = {questionsOrderedList, quizDiv, startPage, startBtn, }
+
 function insertQuestionNumber(questionsObj) {
     for (let i = 0; i < questionsObj.length; i++) {
         questionsObj[i]['question_id'] = i
     }
 }
-let questionsGotWrong = []
+
 
 function insertChoicesArray(questionsObj) {
     for (let i = 0; i < questionsObj.length; i++) {
@@ -60,7 +68,7 @@ function createChoiceElement(formElement, choice, choiceId) {
 function populateFormElement(choices) {
     let formElement = document.createElement('form')
     formElement.classList.add('choices-form')
-    formElement.innerHTML = `<input type="submit" value="Submit Answer">`
+    formElement.innerHTML = `<input class='submit-btn' type="submit" value="Submit Answer">`
     for (let i = 0; i < choices.length; i++) {
         createChoiceElement(formElement, choices[i], `choice-${i}`)
     }
@@ -104,8 +112,9 @@ function createQuestionElement(questionObj) {
 
     let formElement = populateFormElement(questionObj['choices'])
     formElement.id = `q${questionObj['question_id']}-submission`
-
+    let submitBtn = formElement.querySelector('.submit-btn')
     //Eventlistner to form
+    console.log(submitBtn)
     formElement.addEventListener('submit', (e) => {
         e.preventDefault()
 
@@ -114,7 +123,7 @@ function createQuestionElement(questionObj) {
             //console.log("Selected answer:", selected.value,);
 
 
-
+            submitBtn.classList.add('submit-disabled')
             renderAnswerResultv2(selected, questionObj, formElement)
            // console.log(selected.checked)
             questionWrapper.style.pointerEvents = 'none';
@@ -175,44 +184,73 @@ function createQuestionAnswerElement(questionObj) {
 
 }
 
+function createNextPreviousBtns(questionIndex) {
+    controlsDiv = document.createElement('div')
+    controlsDiv.classList.add('controls')
+    if (questionIndex === 0) {
+    controlsDiv.innerHTML = `<button id='previous-question'>Previous</button><button id='next-question'>Next</button>`
+    } else {
+        controlsDiv.innerHTML = `<button id='previous-question'>Previous</button><button id='next-question'>Next</button>`
+    }
+    
+}
+
+
 function resetQuiz(freshQuizFlag) {
+
     console.log(freshQuizFlag)
+    score = 0;
+    totalAnswered = 0
+    questionsGotWrong = []
+    questionsOrderedList.innerHTML = ''
+    scoreBoardScoreElement.textContent = '😺'
+
     if (freshQuizFlag) {
-        questionsOrderedList.innerHTML = ''
-        quizDiv.classList.add('temp-hidden')
-        mainContainer.classList.add('temp-hidden')
-        startPage.classList.remove('hidden')
-        startBtn.textContent = 'Start Quiz🚀'
-        startPageRetryExactBtn.classList.add('hidden')
-        score = 0;
-        totalAnswered = 0
-        questionsGotWrong = []
-        
-        //scoreElement.textContent = score
-        scoreBoardScoreElement.textContent = '😺'
-        scoreBoard.classList.add('temp-hidden')
+        restartFreshHomeScreen()
         
     } else {
 
 
     console.log('unhiding now')
-    startPageRetryExactBtn.classList.remove('hidden')
-    questionsOrderedList.innerHTML = ''
-    quizDiv.classList.add('temp-hidden')
-    mainContainer.classList.add('temp-hidden')
-    startPage.classList.remove('hidden')
-    startBtn.textContent = 'Start Fresh Quiz🚀'
-    score = 0;
-    totalAnswered = 0
-    questionsGotWrong = []
-    //scoreElement.textContent = score
-    scoreBoardScoreElement.textContent = '😺'
-    scoreBoard.classList.add('temp-hidden')
+    restartExactHomeScreen()
+    
     }
 
 }
 
+function restartExactHomeScreen() {
 
+    startPageRetryExactBtn.classList.remove('hidden')
+
+    quizOffScreen()
+
+    startBtn.textContent = 'Start Fresh Quiz🚀'
+}
+
+function restartFreshHomeScreen() {
+    startPageRetryExactBtn.classList.add('hidden')
+
+    quizOffScreen()
+
+    
+    startBtn.textContent = 'Start Quiz🚀'
+    
+
+}
+
+function quizOffScreen() {
+    startPage.classList.remove('hidden')
+    mainContainer.classList.add('temp-hidden')
+    quizDiv.classList.add('temp-hidden')
+    scoreBoard.classList.add('temp-hidden')
+}
+
+function quizOnScreen() {
+    startPage.classList.add('hidden')
+    mainContainer.classList.remove('temp-hidden')
+    quizDiv.classList.remove('temp-hidden')
+    scoreBoard.classList.remove('temp-hidden')
+}
 
 
 
@@ -324,15 +362,13 @@ function createSeeResults() {
 
 }
 
+
+
 function renderStoredQuestions() {
     freshQuizFlag = false
     resetQuiz(freshQuizFlag)
     freshQuizFlag=true
-    startPage.classList.add('hidden')
-    
-    mainContainer.classList.remove('temp-hidden')
-    quizDiv.classList.remove('temp-hidden')
-    scoreBoard.classList.remove('temp-hidden')
+    quizOnScreen()
     storedQuestions.sort(() => 0.5 - Math.random())
     startQuiz(storedQuestions.slice(0 , 5))
 }
@@ -365,16 +401,11 @@ overlayRetryExactBtn.addEventListener('click', ()=> {
 
 startPageRetryExactBtn.addEventListener('click', () => {
     freshQuizFlag=true
-    startPage.classList.add('hidden')
-    // startBtn.classList.add('temp-hidden')
-    mainContainer.classList.remove('temp-hidden')
-    quizDiv.classList.remove('temp-hidden')
-    scoreBoard.classList.remove('temp-hidden')
+    quizOnScreen()
     storedQuestions.sort(() => 0.5 - Math.random())
     startQuiz(storedQuestions)
 
 })
-
 
 
 
@@ -418,19 +449,15 @@ function startQuiz(questionsObj) {
 
 function renderTrivia() {
 
-
+    console.log('engines running')
     startBtn.addEventListener('click', () => {
         freshQuizFlag=true
-        startPage.classList.add('hidden')
-        // startBtn.classList.add('temp-hidden')
-        mainContainer.classList.remove('temp-hidden')
-        quizDiv.classList.remove('temp-hidden')
-        scoreBoard.classList.remove('temp-hidden')
-        // console.log('engines running')
-        fetch(`https://opentdb.com/api.php?amount=10`)
+        quizOnScreen()
+        
+        fetch(fetchURL.local)
             .then(res => res.json())
             .then(data => {
-                questionsObj = data.results
+                questionsObj = data.results.slice(0, 3)
                 storedQuestions = [...questionsObj]
                 startQuiz(questionsObj)
             })
@@ -439,4 +466,5 @@ function renderTrivia() {
 
 }
 
-document.addEventListener('DOMContentLoaded', () => renderTrivia())
+document.addEventListener('DOMContentLoaded', renderTrivia)
+

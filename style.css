@@ -45,8 +45,11 @@ form {
     display: flex;
     justify-content: space-between;
     margin: 0px;
-    padding: 0px;
-    align-items: center;
+    padding-bottom: 5px;
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 5px;
+
 }
 
 .choice {
@@ -75,10 +78,10 @@ form {
 .question-wrapper {
     display: flex;
     flex-direction: column;
-    gap: 5px;
+    gap: 7.5px;
     border: 1px solid black;
-    padding-left: 5px;
-    padding-right: 5px;
+    /* padding-left: 5px; */
+    padding: 10px;
     border-radius: 15px;
     /* transition: ease-in .3s; */
 
@@ -99,7 +102,7 @@ ol {
     gap: 10px;
 }
 
-form>input[type=submit] {
+.submit-btn{
     background-color: greenyellow;
 
     font-weight: 600;
@@ -111,8 +114,11 @@ form>input[type=submit] {
 form>input[name="choice"] {
     color: green;
 }
+.submit-disabled {
+    display:none;
+}
 
-form>input[type=submit]:hover {
+.submit-btn:hover {
     transform: translateY(-10%);
     transition: ease-in .3s;
 }
