@@ -6,6 +6,7 @@ const fetchURL = {
 
 }
 const questionsOrderedList = document.querySelector('.quiz ol')
+const questionsNodeList = document.getElementsByClassName('question-wrapper')
 const quizDiv = document.querySelector('.quiz')
 
 const startBtn = document.querySelector('.start-btn')
@@ -19,8 +20,8 @@ const mainContainer = document.querySelector('.container')
 
 const resultsBtn = document.querySelector('.results-summary-btn')
 const controlQuestion = document.querySelector('.question-control')
-const previousQuestion = document.getElementById('previous-question')
-const nextQuestion = document.getElementById('next-question')
+const previousQuestionBtn = document.getElementById('previous-question')
+const nextQuestionBtn = document.getElementById('next-question')
 const finishBtn = document.getElementById('finish-btn')
 
 const overlay = document.querySelector('.overlay');
@@ -30,15 +31,23 @@ const feedback = document.getElementById('feedback')
 const reviewBtn = document.querySelector('.review-btn')
 const startPageRetryExactBtn = document.querySelector('.start-retry-btn')
 const overlayRetryExactBtn = document.querySelector('.retry-exact-in-overlay')
-
+let listenersAdded = false;
 let totalAnswered = 0
-let questionsObj;
+let testquestionsObj;
 //let myQuestionsObj;
 let totalQuestions;
 let storedQuestions;
 let freshQuizFlag = true;
+let showFlag = 'one';
 let score = 0;
 let questionsGotWrong = [];
+
+const tracker = { currentQ: 0, previousQ: 0 }
+let currentQuestionIndex = 0
+
+let previousQuestionIndex;
+
+
 
 mainDOM = { questionsOrderedList, quizDiv, startPage, startBtn, }
 
@@ -46,6 +55,7 @@ function insertQuestionNumber(questionsObj) {
     for (let i = 0; i < questionsObj.length; i++) {
         questionsObj[i]['question_id'] = i
     }
+
 }
 
 
@@ -55,6 +65,7 @@ function insertChoicesArray(questionsObj) {
         let insertAtIndex = Math.floor(Math.random() * (questionsObj[i]['incorrect_answers'].length + 1));
         choices.splice(insertAtIndex, 0, questionsObj[i]["correct_answer"])
         questionsObj[i]["choices"] = choices
+        questionsObj[i]['isAnswered'] = false
     }
 }
 function createChoiceElement(formElement, choice, choiceId) {
@@ -134,7 +145,7 @@ function createQuestionElement(questionObj) {
             submitBtn.classList.add('submit-disabled')
             renderAnswerResultv2(selected, questionObj, formElement)
             // console.log(selected.checked)
-            questionWrapper.style.pointerEvents = 'none';
+
 
 
         } else {
@@ -145,8 +156,10 @@ function createQuestionElement(questionObj) {
 
 
     questionWrapper.appendChild(formElement)
+    //console.log(questionWrapper)
+    return questionWrapper
 
-    questionsOrderedList.appendChild(questionWrapper)
+
 
 
 }
@@ -188,7 +201,8 @@ function createQuestionAnswerElement(questionObj) {
 
     questionWrapper.appendChild(correctAnswerElement)
 
-    questionsOrderedList.appendChild(questionWrapper)
+    //questionsOrderedList.appendChild(questionWrapper)
+    return questionWrapper
 
 }
 
@@ -209,6 +223,8 @@ function resetQuiz(freshQuizFlag) {
     questionsGotWrong = []
     questionsOrderedList.innerHTML = ''
     scoreBoardScoreElement.textContent = '😺'
+    currentQuestionIndex = 0;
+
 
     if (freshQuizFlag) {
         restartFreshHomeScreen()
@@ -330,6 +346,9 @@ function renderAnswerResultv2(selected, questionObject, formElement) {
 
         //formElement.parentElement.classList.add('correct')
         // formElement.style.pointerEvents = "none";
+        formElement.parentElement.style.pointerEvents = 'none';
+        questionObject.isAnswered = true
+        // console.log('hurray,:', questionObject.question, 'Answered!!')
 
 
 
@@ -358,6 +377,9 @@ function renderAnswerResultv2(selected, questionObject, formElement) {
         let questionGotWrong = { ...questionObject }
         questionGotWrong['incorrect_answer'] = selected.value
         questionsGotWrong.push(questionGotWrong)
+        formElement.parentElement.style.pointerEvents = 'none';
+        questionObject.isAnswered = true
+        //console.log('hurray,:', questionObject.question, 'Answered!!')
 
     }
 }
@@ -373,12 +395,12 @@ function createSeeResults() {
 
 
 
-function renderStoredQuestions() {
+function renderStoredQuestions(storedQuestions) {
     freshQuizFlag = false
     resetQuiz(freshQuizFlag)
     freshQuizFlag = true
     quizOnScreen()
-    storedQuestions.sort(() => 0.5 - Math.random())
+    //storedQuestions.sort(() => 0.5 - Math.random())
     startQuiz(storedQuestions)
 }
 
@@ -401,7 +423,7 @@ resultsBtn.addEventListener('click', () => {
 
 })
 
-restartExactBtn.addEventListener('click', () => renderStoredQuestions())
+restartExactBtn.addEventListener('click', () => renderStoredQuestions(storedQuestions))
 
 overlay.addEventListener('click', (e) => {
     if (e.target === overlay) {
@@ -421,7 +443,9 @@ reviewBtn.addEventListener('click', () => {
     if (questionsGotWrong.length > 0) {
         questionsOrderedList.innerHTML = ''
         // console.log(questionsGotWrong)
-        questionsGotWrong.forEach((questionObj) => createQuestionAnswerElement(questionObj))
+
+
+        questionsGotWrong.forEach((questionObj) => questionsOrderedList.appendChild(createQuestionAnswerElement(questionObj)))
     }
     scoreBoardScoreElement.textContent = '😺'
 
@@ -429,37 +453,78 @@ reviewBtn.addEventListener('click', () => {
 
 overlayRetryExactBtn.addEventListener('click', () => {
     overlay.classList.add('hidden')
-    renderStoredQuestions()
+    renderStoredQuestions(storedQuestions)
 })
 
 startPageRetryExactBtn.addEventListener('click', () => {
     freshQuizFlag = true
     quizOnScreen()
-    storedQuestions.sort(() => 0.5 - Math.random())
+
     startQuiz(storedQuestions)
 
 })
 
-function buildShowQuestions(showFlag = 'one') {
-    questionsObj.forEach((questionObj) => createQuestionElement(questionObj))
-    let questionsNodeListy = questionsOrderedList.querySelectorAll('li')
+function buildShowQuestions(questionsObj, showFlag) {
+    questionsObj.forEach((questionObj) => questionsOrderedList.appendChild(createQuestionElement(questionObj)))
+    //let questionsNodeListy = questionsOrderedList.querySelectorAll('li')
+    //console.log(questionsNodeList)
     if (showFlag === 'all') {
 
-        questionsNodeListy.forEach((questionElement) => questionElement.classList.remove('hidden'))
+        questionsNodeList.forEach((questionElement) => questionElement.classList.remove('hidden'))
 
     } else if (showFlag === 'one') {
         resultsBtn.classList.add('hidden')
         controlQuestion.classList.remove('hidden')
-        nextQuestion.classList.remove('hidden')
+        nextQuestionBtn.classList.remove('hidden')
+        nextQuestionBtn.classList.remove('inactive-btn')
         finishBtn.classList.add('hidden')
-        let currentQuestiony = 0;
-        
-        showOneHideRest(currentQuestiony, questionsNodeListy)
 
-        console.log('hi')
+
+        //showOneHideRestClaude(questionsObj)
+        questionsNodeList[currentQuestionIndex].classList.remove('hidden');
+        updateBtns()
+
+        if (!listenersAdded) {
+        nextQuestionBtn.addEventListener('click', () => {
+            handleNextQuestion(questionsObj)
+        });
+        previousQuestionBtn.addEventListener('click', handlePreviousQuestion);
+        }
+        listenersAdded = true
+
+
+
+
+
     }
 
 }
+
+function updateBtns() {
+
+    if (questionsNodeList.length === 1) {
+        finishBtn.classList.remove('hidden');
+    }
+
+    if (currentQuestionIndex === 0) {
+        previousQuestionBtn.classList.add('inactive-btn');
+    }
+
+
+    currentQuestionIndex > 0 ? previousQuestionBtn.classList.remove('inactive-btn') : previousQuestionBtn.classList.add('inactive-btn');
+   
+
+    if (currentQuestionIndex === questionsNodeList.length - 1) {
+        
+        finishBtn.classList.remove('hidden');
+        nextQuestionBtn.classList.add('hidden');
+    } else {
+        nextQuestionBtn.classList.remove('inactive-btn');
+        nextQuestionBtn.classList.remove('hidden');
+        finishBtn.classList.add('hidden');
+    }
+}
+
 
 finishBtn.addEventListener('click', () => {
 
@@ -473,103 +538,85 @@ finishBtn.addEventListener('click', () => {
 
 })
 
-function showOneHideRest(currentQuestion, questionsNodeList) {
-    questionsNodeList[currentQuestion].classList.remove('hidden')
-
-    if (questionsNodeList.length === 1) {
-
-        //nextQuestion.classList.add('inactive-btn')
-        nextQuestion.classList.add('hidden')
-        finishBtn.classList.remove('hidden')
 
 
-    }
+function resetQuestionsObj(questionsObj) {
+    //questionsObj.sort(() => 0.5 - Math.random())
+    const keysToRemove = ['question_id', 'choices', 'isAnswered', 'question-number'];
 
-    if (currentQuestion === 0) {
-        previousQuestion.classList.add('inactive-btn')
-    }
-
-
-
-    nextQuestion.addEventListener('click', () => {
-
-
-        let prevQuestion = currentQuestion;
-        
-
-        if (prevQuestion < questionsNodeList.length - 1) {
-            currentQuestion += 1
-            questionsNodeList[prevQuestion].classList.add('hidden')
-            questionsNodeList[currentQuestion].classList.remove('hidden')
-            console.log('after:', currentQuestion)
-        } else {
-            
-            console.log(`We are at the End.${(currentQuestion === questionsNodeList.length - 1)}`)
-
-        }
-        console.log('prevq-next', prevQuestion, 'currentQ-next:', currentQuestion)
-
-
-
-
-        if (currentQuestion === questionsNodeList.length - 1) {
-
-            nextQuestion.classList.add('hidden')
-            finishBtn.classList.remove('hidden')
-
-
-        } else {
-            nextQuestion.classList.remove('inactive-btn')
-        }
-
-        currentQuestion > 0 ? previousQuestion.classList.remove('inactive-btn') : previousQuestion.classList.add('inactive-btn')
-
-
-    })
-
-    previousQuestion.addEventListener('click', () => {
-
-
-        let prevQuestion = currentQuestion;
-
-        if (prevQuestion > 0) {
-
-            currentQuestion -= 1
-            questionsNodeList[prevQuestion].classList.add('hidden')
-            questionsNodeList[currentQuestion].classList.remove('hidden')
-            
-        } else {
-            console.log('We are at the Beginning.')
-        }
-        //console.log('prv-prevq', prevQuestion, 'prv-currentQ:', currentQuestion)
-        currentQuestion > 0 ? previousQuestion.classList.remove('inactive-btn') : previousQuestion.classList.add('inactive-btn')
-
-        if (currentQuestion === questionsNodeList.length - 1) {
-            nextQuestion.classList.add('inactive-btn')
-        } else {
-            nextQuestion.classList.remove('inactive-btn')
-            nextQuestion.classList.remove('hidden')
-            finishBtn.classList.add('hidden')
-        }
-
-
-
-    })
+    questionsObj.forEach(obj => {
+        keysToRemove.forEach(key => {
+            delete obj[key];
+        });
+    });
 
 
 }
 
+function testGlobal() {
+    console.log('i am global (test)-->', testquestionsObj[currentQuestionIndex])
+    console.log('i am global too(stored)-->', storedQuestions[currentQuestionIndex])
+
+
+}
+
+function handleNextQuestion(questionsObj) {
+    
+    if (!questionsObj[currentQuestionIndex].isAnswered) {
+        
+
+        alert(`Please answer the ${questionsObj[currentQuestionIndex]['question']} before proceeding`);
+        return; // Stop execution if question isn't answered
+    }
+    //tracker.currentQ = currentQuestionIndex
+    previousQuestionIndex = currentQuestionIndex;
+
+
+
+    if (previousQuestionIndex < questionsNodeList.length - 1) {
+        currentQuestionIndex += 1;
+        questionsNodeList[previousQuestionIndex].classList.add('hidden');
+        questionsNodeList[currentQuestionIndex].classList.remove('hidden');
+        // console.log('after:', currentQuestionIndex);
+    } else {
+        // console.log(`We are at the End.${(currentQuestionIndex === questionsNodeList.length - 1)}`);
+    }
+
+
+    updateBtns()
+}
+
+
+function handlePreviousQuestion() {
+    previousQuestionIndex = currentQuestionIndex;
+
+    if (previousQuestionIndex > 0) {
+        currentQuestionIndex -= 1;
+        questionsNodeList[previousQuestionIndex].classList.add('hidden');
+        questionsNodeList[currentQuestionIndex].classList.remove('hidden');
+    } else {
+        // console.log('We are at the Beginning.');
+    }
+
+    updateBtns()
+}
 
 
 function startQuiz(questionsObj) {
     // console.log(questionsObj)
+    testGlobal()
+
+
+    resetQuestionsObj(questionsObj)
+
     totalQuestions = questionsObj.length
     insertQuestionNumber(questionsObj)
     //console.log(questionsObj)              
     insertChoicesArray(questionsObj)
     // console.log(questionsObj)
-    buildShowQuestions()
+    buildShowQuestions(questionsObj, showFlag)
 
+    //const finishBtn = document.getElementById('finish-btn')
     //quizDiv.appendChild(createSeeResults())
     document.querySelector('.quiz ol').style.display = 'flex'
 
@@ -581,18 +628,19 @@ function startQuiz(questionsObj) {
 
 
 function renderTrivia() {
-    
+
     console.log('engines running')
+    console.log(document.querySelectorAll('.question-wrapper'))
     startBtn.addEventListener('click', () => {
         freshQuizFlag = true
         quizOnScreen()
-        
+
         fetch(fetchURL.local)
             .then(res => res.json())
             .then(data => {
-                questionsObj = data.results.slice(0, 3)
-                storedQuestions = [...questionsObj]
-                startQuiz(questionsObj)
+                testquestionsObj = data.results.slice(0, 3)
+                storedQuestions = [...testquestionsObj]
+                startQuiz(testquestionsObj)
             })
 
     })
